@@ -3,5 +3,5 @@
 class Spaceship():
     
     def __init__(self) -> None:
-        pass
+        self.__lives = 3
     

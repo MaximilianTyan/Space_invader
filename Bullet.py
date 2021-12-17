@@ -2,7 +2,7 @@
 
 class Bullet():
     
-    def __init__(self, pos_x, pos_y, team='ennemy', speed='normal') -> None:
+    def __init__(self, pos_x:int, pos_y:int, team='ennemy':str, speed='normal':str) -> None:
         self.__team = team
         self.__pos_x = pos_x
         self.__pos_y = pos_y

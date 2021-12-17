@@ -8,4 +8,4 @@ class Alien():
         self.x = pos_x
         self.y = pos_y
         
-        alien_count += 1
+        Alien.alien_count += 1
