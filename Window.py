@@ -2,7 +2,7 @@
 
 from tkinter import Canvas, Tk, Label, Button, Entry, PhotoImage, StringVar
 
-class self():
+class Window():
     """
     Custom wrapper inheriting from tkinter's Tk object to simplify interaction
     """
