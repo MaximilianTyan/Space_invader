@@ -25,19 +25,21 @@ class Window():
         self.__Score_label = Label(self.__App, text="Score : ")
         self.__Lives_label = Label(self.__App, text="Vies : ")
 
-        self.__Canvas = Canvas(self.__App, width=550, height=550, bg="blue")
-        #earth= PhotoImage(file="image/earth.jpg")
-        #item=can.create_image(80,80, image=earth)
+        self.__Canvas = Canvas(self.__App, width=700, height=570, bg="blue")
+        self.__earth= PhotoImage(file="image/earth.gif")
+        item=self.__Canvas.create_image(350,290, image=self.__earth)
 
+        self.__New_Game_button= Button(self.__App, text="NEW GAME")
         self.__Exit_button= Button(self.__App, text="QUITTER", fg="red", command=self.__App.destroy)
 
         self.layout_pack()
         
     def layout_pack(self) -> None:
-        self.__Score_label.grid(row=1, column=1)
-        self.__Lives_label.grid(row=1, column=2)
+        self.__Score_label.grid(row=1, column=1, sticky="W")
+        self.__Lives_label.grid(row=1, column=1, sticky="E")
         self.__Canvas.grid(row=2, column=1)
-        self.__Exit_button.grid(row=2, column=2)
+        self.__New_Game_button.grid(row=2, column=2)
+        self.__Exit_button.grid(row=2, column=2, sticky="S")
     
     def mainloop(self):
         self.__App.mainloop()
