@@ -1,5 +1,8 @@
 #coding:utf-8
 
+from random import randint
+
+
 from Bullet import Bullet
 from Aliens import Alien
 
@@ -9,7 +12,7 @@ class Game():
         self.__clock_time = 50
     
     def new_game(self):
-        self.__Alien_list = []
+        self.__level = 0
     
     
     

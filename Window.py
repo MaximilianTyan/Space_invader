@@ -2,13 +2,13 @@
 
 from tkinter import Canvas, Tk, Label, Button, Entry, PhotoImage, StringVar
 
-class Window():
+class self():
     """
     Custom wrapper inheriting from tkinter's Tk object to simplify interaction
     """
     
     #Creation & initialisation
-    def __init__(Window, width=800, height=600, offset_x=250, offset_y=30) -> None:
+    def __init__(self, width=800, height=600, offset_x=250, offset_y=30) -> None:
         """
         Creates the basic Window object
 
@@ -18,58 +18,64 @@ class Window():
             offset_x (int, optional): [Window offset from top right hand corner of the screen]. Defaults to 250.
             offset_y (int, optional): [Window offset from top right hand corner of the screen]. Defaults to 30.
         """
-        Window.__App = Tk()
+        self.__App = Tk()
         
-        Window.__App.title("Space invaders")
-        Window.__App.geometry(f"{width}x{height}+{offset_x}+{offset_y}")
+        self.__App.title("Space invaders")
+        self.__App.geometry(f"{width}x{height}+{offset_x}+{offset_y}")
 
-        Window.__Score_label = Label(Window.__App, text="Score : ")
-        Window.__Lives_label = Label(Window.__App, text="Vies : ")
+        self.__Score_label = Label(self.__App, text="Score : ")
+        self.__Lives_label = Label(self.__App, text="Vies : ")
 
-        Window.__Canvas = Canvas(Window.__App, width=700, height=570, bg="blue")
-        Window.__earth= PhotoImage(file="image/earth.gif")
-        item=Window.__Canvas.create_image(350,290, image=Window.__earth)
-
-        Window.__New_Game_button= Button(Window.__App, text="NEW GAME")
-        Window.__Exit_button= Button(Window.__App, text="QUITTER", fg="red", command=Window.__App.destroy)
-
-        Window.layout_pack()
+        self.__Canvas = Canvas(self.__App, width=700, height=570, bg="blue")
         
-    def layout_pack(Window) -> None:
-        Window.__Score_label.grid(row=1, column=1, sticky="W")
-        Window.__Lives_label.grid(row=1, column=1, sticky="E")
-        Window.__Canvas.grid(row=2, column=1)
-        Window.__New_Game_button.grid(row=2, column=2)
-        Window.__Exit_button.grid(row=2, column=2, sticky="S")
+
+        self.__New_Game_button= Button(self.__App, text="NEW GAME")
+        self.__Exit_button= Button(self.__App, text="QUITTER", fg="red", command=self.__App.destroy)
+
+        self.layout_pack()
     
-    def mainloop(Window):
-        Window.__App.mainloop()
+    def create_image(self, pos_x, pos_y, image_source):
+        self.__tempImage= PhotoImage(file= image_source)
+        self.__Background_image = self.__Canvas.create_image(pos_x, pos_y, image=self.__tempImage)
+    
+    def layout_pack(self) -> None:
+        
+        self.__Score_label.grid(row=1, column=1, sticky="W")
+        self.__Lives_label.grid(row=1, column=1, sticky="E")
+        self.__Canvas.grid(row=2, column=1)
+        self.__New_Game_button.grid(row=2, column=2)
+        self.__Exit_button.grid(row=2, column=2, sticky="S")
+        print('packed')
+    
+    def mainloop(self):
+        print('loop')
+        self.__App.mainloop()
     
     
     # Getters
-    def get_width(Window) -> int:
-        return Window.__App.width
+    def get_width(self) -> int:
+        return self.__App.width
     
-    def get_height(Window) -> int:
-        return Window.__App.height
+    def get_height(self) -> int:
+        return self.__App.height
     
-    def get_App(Window) -> Tk:
-        return Window.__App
+    def get_App(self) -> Tk:
+        return self.__App
     
     # Setters
     
-    def disp_lives(Window, lives) -> None:
+    def disp_lives(self, lives) -> None:
         """
         Args:
             lives (int): new number of lives to be displayed
         """
-        Window.__Lives_label.text = "Vies : " + str(lives)
+        self.__Lives_label.text = "Vies : " + str(lives)
         
-    def disp_score(Window, score) -> None:
+    def disp_score(self, score) -> None:
         """
         Args:
             score (int): new score to be displayed
         """
-        Window.__Score_label.text = "Vies : " + str(score)
+        self.__Score_label.text = "Vies : " + str(score)
     
     
