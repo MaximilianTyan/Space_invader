@@ -7,7 +7,8 @@ TODO:
 - Classe Alien
 - Classe PlayerShip
 - Classe Obstacles
-
+- Score
+- Collecte image (en cours)
 """
 
 #Standard Imports
