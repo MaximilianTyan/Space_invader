@@ -12,11 +12,22 @@ TODO:
 """
 
 #Standard Imports
+import time
 
 #Custom imports
 import Window
 
+
 #Window creation
 Wd = Window.Window()
 
+
+
 Wd.mainloop()
+    
+    
+    
+    
+    
+    
+    
