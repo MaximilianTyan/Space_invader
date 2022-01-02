@@ -3,27 +3,34 @@ Objectif : Réaliser une version custom de Space Invader en Python en utilisant 
 Date : 17/12/2021 - 
 Fait par : Micheli Sebastien, Languille Antoine
 TODO: 
-- Classe Alien
-- Classe PlayerShip
+- Classe Alien (et les levels en général)
+- Classe PlayerShip (mouvement, tirs...)
 - Classe Obstacles
 - Score
 - Collecte image (en cours)
 - Hitbox detection
+- Différents écrans (Window \in CrtScreen \in {Boutons, objets, titres...})
 """
 
 #Standard Imports
 import time
 
 #Custom imports
-import Window
+from Window import Window
 
 
 #Window creation
-Wd = Window.Window()
+Window.setup()
 
 
 
-Wd.mainloop()
+
+
+
+
+
+
+Window.mainloop()
     
     
     

@@ -1,8 +1,8 @@
 #coding:utf-8
-
+from Window import Window
 class Alien(Window):
     
-    cls.__alien_count = 0
+    __alien_count = 0
     
     def __init__(self, pos_x, pos_y) -> None:
         self.x = pos_x

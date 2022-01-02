@@ -1,81 +1,97 @@
 #coding:utf-8
 
+from os import stat
 from tkinter import Canvas, Tk, Label, Button, Entry, PhotoImage, StringVar
 
 class Window():
     """
-    Custom wrapper inheriting from tkinter's Tk object to simplify interaction
+    Library of display functions inherited from by almost all object class
+    to allow them to interact with the canvas without passing the Tk object
+    as an attribute with each instancing 
     """
-    
-    #Creation & initialisation
-    def __init__(self, width=800, height=600, offset_x=250, offset_y=30) -> None:
+        
+    #Init overrule
+    def __init__(self) -> None:
+            raise(Exception('Window class is not to be instanced, it is only for methods inheritance purposes'))
+       
+    @staticmethod
+    def setup(width=800, height=600, offset_x=250, offset_y=30):
         """
         Creates the basic Window object
 
         Args:
-            width (int, optional): [Window width in pixels]. Defaults to 800.
-            height (int, optional): [Window height in pixels]. Defaults to 600.
+            width (int, optional): [Window width in pixels]. Default to 800.
+            height (int, optional): [Window height in pixels]. Default to 600.
             offset_x (int, optional): [Window offset from top right hand corner of the screen]. Defaults to 250.
             offset_y (int, optional): [Window offset from top right hand corner of the screen]. Defaults to 30.
         """
-        self.__App = Tk()
+        Window.__App = Tk()
         
-        self.__App.title("Space invaders")
-        self.__App.geometry(f"{width}x{height}+{offset_x}+{offset_y}")
+        Window.__App.title("Space invaders")
+        Window.__App.geometry(f"{width}x{height}+{offset_x}+{offset_y}")
 
-        self.__Score_label = Label(self.__App, text="Score : ")
-        self.__Lives_label = Label(self.__App, text="Vies : ")
 
-        self.__Canvas = Canvas(self.__App, width=700, height=570, bg="blue")
+        Window.__Canvas = Canvas(Window.__App, width=700, height=570, bg="blue")
         
+        #Battle Field
+        Window.__Score_label = Label(Window.__App, text="Score : ")
+        Window.__Lives_label = Label(Window.__App, text="Vies : ")
 
-        self.__New_Game_button= Button(self.__App, text="NEW GAME")
-        self.__Exit_button= Button(self.__App, text="QUITTER", fg="red", command=self.__App.destroy)
-
-        self.layout_pack()
-    
-    def create_image(self, pos_x, pos_y, image_source):
-        self.__tempImage= PhotoImage(file= image_source)
-        self.__Background_image = self.__Canvas.create_image(pos_x, pos_y, image=self.__tempImage)
-    
-    def layout_pack(self) -> None:
         
-        self.__Score_label.grid(row=1, column=1, sticky="W")
-        self.__Lives_label.grid(row=1, column=1, sticky="E")
-        self.__Canvas.grid(row=2, column=1)
-        self.__New_Game_button.grid(row=2, column=2)
-        self.__Exit_button.grid(row=2, column=2, sticky="S")
-        print('packed')
+        #Title Screen
+        Window.__New_Game_button= Button(Window.__App, text="NEW GAME")
+        Window.__Exit_button= Button(Window.__App, text="QUITTER", fg="red", command=Window.__App.destroy)
+
+
+        Window.layout_pack()
+                
+    @staticmethod   
+    def create_image(pos_x, pos_y, image_source):
+        Window.__tempImage= PhotoImage(file= image_source)
+        return Window.__Canvas.create_image(pos_x, pos_y, image=Window.__tempImage)
     
-    def mainloop(self):
+    @staticmethod
+    def layout_pack() -> None:
+        Window.__Score_label.grid(row=1, column=1, sticky="W")
+        Window.__Lives_label.grid(row=1, column=1, sticky="E")
+        Window.__Canvas.grid(row=2, column=1)
+        Window.__New_Game_button.grid(row=2, column=2)
+        Window.__Exit_button.grid(row=2, column=2, sticky="S")
+    
+    @staticmethod
+    def mainloop():
         print('loop')
-        self.__App.mainloop()
+        Window.__App.mainloop()
     
     
     # Getters
-    def get_width(self) -> int:
-        return self.__App.width
+    @staticmethod
+    def get_width() -> int:
+        return Window.__App.width
     
-    def get_height(self) -> int:
-        return self.__App.height
+    @staticmethod
+    def get_height() -> int:
+        return Window.__App.height
     
-    def get_App(self) -> Tk:
-        return self.__App
+    @staticmethod
+    def get_App() -> Tk:
+        return Window.__App
     
     # Setters
-    
-    def disp_lives(self, lives) -> None:
+    @staticmethod
+    def disp_lives(lives) -> None:
         """
         Args:
             lives (int): new number of lives to be displayed
         """
-        self.__Lives_label.text = "Vies : " + str(lives)
-        
-    def disp_score(self, score) -> None:
+        Window.__Lives_label.text = "Vies : " + str(lives)
+    
+    @staticmethod
+    def disp_score(score) -> None:
         """
         Args:
             score (int): new score to be displayed
         """
-        self.__Score_label.text = "Vies : " + str(score)
+        Window.__Score_label.text = "Vies : " + str(score)
     
     

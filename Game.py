@@ -2,24 +2,23 @@
 
 from random import randint
 
-
+from Window import Window
 from Bullet import Bullet
 from Aliens import Alien
 
-class Game():
-    def __init__(self, Window) -> None:
-        self.__Window = Window
+class Game(Window):
+    def __init__(self) -> None:
         self.__clock_time = 50
     
-    def new_game(self):
+    def game_reset(self):
         self.__level = 0
-    
+        self.__score = 0
     
     
     def clock(self):
         
-        Aliens.tick()
-        Bullets.tick()
+        Alien.tick()
+        Bullet.tick()
         
-        self.__Window.get_App().after(self.__clock_time, self.clock)
+        self.get_App().after(self.__clock_time, self.clock)
         

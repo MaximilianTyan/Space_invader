@@ -1,5 +1,5 @@
 #coding:utf-8
-
+from Window import Window
 class Bullet(Window):
     
     def __init__(self, pos_x, pos_y, team='ennemy', speed='normal') -> None:
@@ -24,10 +24,8 @@ class Bullet(Window):
         else:
             self.__color = 'red'
             self.__dir_y  = 1
-            
         
-        
-        if self.speed == 'slow':
+        if speed == 'slow':
             self.__speed = None
         elif speed == 'normal':
             self.__speed = None
@@ -42,4 +40,4 @@ class Bullet(Window):
     
     
     def tick(self):
-        print('alien tock')
+        print('bullet tock')
