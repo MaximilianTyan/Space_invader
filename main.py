@@ -17,11 +17,13 @@ import time
 
 #Custom imports
 from Window import Window
-
+from Spaceship import Spaceship
+from Game import Game
 
 #Window creation
 Window.setup()
 
+Player = Spaceship()
 
 
 

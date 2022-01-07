@@ -26,13 +26,21 @@ class Bullet(Window):
             self.__dir_y  = 1
         
         if speed == 'slow':
-            self.__speed = None
+            self.__speed = 1
         elif speed == 'normal':
-            self.__speed = None
+            self.__speed = 2
         elif speed == 'fast':
-            self.__speed = None
+            self.__speed = 3
         else :
-            self.__speed = None
+            self.__speed = 2
+        
+        self.__Sprite = self.create_image(pos_x, pos_y, 'images/')
+        
+        
+        
+        
+        
+        
     
     def next_tick(self) -> None:
         # self.__pos_x = self.__pos_x + self.__speed * self.dir_y
