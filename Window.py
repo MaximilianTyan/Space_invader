@@ -39,16 +39,25 @@ class Window():
 
         
         #Title Screen
-        Window.__New_Game_button= Button(Window.__App, text="NEW GAME")
-        Window.__Exit_button= Button(Window.__App, text="QUITTER", fg="red", command=Window.__App.destroy)
+        Window.__New_Game_button = Button(Window.__App, text="NEW GAME")
+        Window.__Exit_button = Button(Window.__App, text="QUITTER", fg="red", command=Window.__App.destroy)
 
 
+        #Background centering
+        x = Window.__Canvas.winfo_reqwidth()
+        y = Window.__Canvas.winfo_reqheight()
+        Window.__Background = Window.create_image(x//2, y//2, 'images/earth.gif', anchor='center')
+        
+        
+        #Packing
         Window.layout_pack()
                 
     @staticmethod   
-    def create_image(pos_x, pos_y, image_source):
-        Window.__tempImage= PhotoImage(file= image_source)
-        return Window.__Canvas.create_image(pos_x, pos_y, image=Window.__tempImage)
+    def create_image(pos_x, pos_y, image_source, anchor='ne') -> int:
+        image = PhotoImage(file= image_source)
+        id = Window.__Canvas.create_image(pos_x, pos_y, image=image, anchor=anchor)
+        return id, image
+        
     
     @staticmethod
     def layout_pack() -> None:
@@ -76,6 +85,10 @@ class Window():
     @staticmethod
     def get_App() -> Tk:
         return Window.__App
+
+    @staticmethod
+    def get_Canvas() -> Canvas:
+        return Window.__Canvas
     
     # Setters
     @staticmethod
