@@ -19,14 +19,16 @@ import time
 from Window import Window
 from Spaceship import Spaceship
 from Game import Game
+from Alien import Alien
 
 #Window creation
 Window.setup()
 
 Player = Spaceship()
+Board = Game()
+Alien()
 
-
-
+Board.clock()
 
 
 

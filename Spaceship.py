@@ -1,7 +1,7 @@
 #codong:utf-8
 
 from Window import Window
-
+from Bullet import Bullet
 class Spaceship(Window):
     
     def __init__(self) -> None:
@@ -15,13 +15,14 @@ class Spaceship(Window):
         self.__Image = self.create_image(self.__pos_x, self.__pos_y, 'images/vaisseau.gif', anchor='center')
         
         key_dict = (
-            (lambda evt: self.left(), ('Q', 'Left')),
-            (lambda evt: self.right(), ('D', 'Right')),
-            (lambda evt: self.shoot(), ('space')),
+            (lambda evt: self.left(), ('q', 'Left')),
+            (lambda evt: self.right(), ('d', 'Right')),
+            (lambda evt: self.shoot(), ('space',)),
         )
         for val in key_dict:
             for key in val[1]:
-                self.get_App().bind(f'<KeyPress-{key}>', val[0])
+                #print(f'', val[0])
+                self.get_App().bind(f'<{key}>', val[0])
         
     def left(self) -> None:
         if self.__pos_x > self.__Image[1].width() //2 :
@@ -34,7 +35,8 @@ class Spaceship(Window):
             self.update_pos()
     
     def shoot(self):
-        
+        Bullet(self.__pos_x, self.__pos_y, 'ally', 'normal')
+        print('pew')
     
     
     def update_pos(self):

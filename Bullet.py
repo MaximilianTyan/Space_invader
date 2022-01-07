@@ -2,6 +2,8 @@
 from Window import Window
 class Bullet(Window):
     
+    list = []
+    
     def __init__(self, pos_x, pos_y, team='ennemy', speed='normal') -> None:
         """[summary]
 
@@ -26,26 +28,26 @@ class Bullet(Window):
             self.__dir_y  = 1
         
         if speed == 'slow':
-            self.__speed = 1
-        elif speed == 'normal':
-            self.__speed = 2
-        elif speed == 'fast':
             self.__speed = 3
-        else :
-            self.__speed = 2
+        elif speed == 'normal':
+            self.__speed = 5
+        elif speed == 'fast':
+            self.__speed = 10
+        else:
+            self.__speed = 5
         
-        self.__Sprite = self.create_image(pos_x, pos_y, 'images/')
+        self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, 'images/missile.gif', anchor='center')
         
+        Bullet.list.append(self)
+
+    @classmethod
+    def tick(cls) -> None:
+        for instance in cls.list:
+            # self.__pos_x = self.__pos_x + self.__speed * self.dir_y
+            instance.__pos_y = instance.__pos_y + instance.__speed * instance.__dir_y
+            
+            if instance.__pos_y < 0 - instance.__Sprite[1].height()//2 :
+                cls.list.remove(instance)
+            else:
+                cls.get_Canvas().coords(instance.__Sprite[0], instance.__pos_x, instance.__pos_y)
         
-        
-        
-        
-        
-    
-    def next_tick(self) -> None:
-        # self.__pos_x = self.__pos_x + self.__speed * self.dir_y
-        self.__pos_y = self.__pos_y + self.__speed * self.dir_y
-    
-    
-    def tick(self):
-        print('bullet tock')

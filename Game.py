@@ -4,7 +4,7 @@ from random import randint
 
 from Window import Window
 from Bullet import Bullet
-from Aliens import Alien
+from Alien import Alien
 
 class Game(Window):
     def __init__(self) -> None:
