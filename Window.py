@@ -53,7 +53,7 @@ class Window():
         Window.layout_pack()
                 
     @staticmethod   
-    def create_image(pos_x, pos_y, image_source, anchor='ne') -> int:
+    def create_image(pos_x, pos_y, image_source, anchor='nw') -> int:
         image = PhotoImage(file= image_source)
         id = Window.__Canvas.create_image(pos_x, pos_y, image=image, anchor=anchor)
         return id, image

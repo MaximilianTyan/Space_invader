@@ -2,7 +2,7 @@
 from Window import Window
 class Bullet(Window):
     
-    list = []
+    __list = []
     
     def __init__(self, pos_x, pos_y, team='ennemy', speed='normal') -> None:
         """[summary]
@@ -38,16 +38,16 @@ class Bullet(Window):
         
         self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, 'images/missile.gif', anchor='center')
         
-        Bullet.list.append(self)
+        Bullet.__list.append(self)
 
     @classmethod
     def tick(cls) -> None:
-        for instance in cls.list:
+        for instance in cls.__list:
             # self.__pos_x = self.__pos_x + self.__speed * self.dir_y
             instance.__pos_y = instance.__pos_y + instance.__speed * instance.__dir_y
             
             if instance.__pos_y < 0 - instance.__Sprite[1].height()//2 :
-                cls.list.remove(instance)
+                cls.__list.remove(instance)
             else:
                 cls.get_Canvas().coords(instance.__Sprite[0], instance.__pos_x, instance.__pos_y)
         

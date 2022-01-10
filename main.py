@@ -26,7 +26,7 @@ Window.setup()
 
 Player = Spaceship()
 Board = Game()
-Alien()
+test = Alien(100,100)
 
 Board.clock()
 
