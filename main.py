@@ -19,16 +19,16 @@ import time
 from Window import Window
 from Spaceship import Spaceship
 from Game import Game
-from Alien import Alien
+from Alien import FastAlien, NormalAlien, ToughAlien, HardAlien, Boss
 
 #Window creation
 Window.setup()
 
-Player = Spaceship()
-Board = Game()
-test = Alien(100,100)
+x = NormalAlien(Window.get_Canvas().winfo_reqwidth()//2, Window.get_Canvas().winfo_reqheight()//2)
 
-Board.clock()
+Player = Spaceship()
+Game.start()
+
 
 
 
