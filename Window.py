@@ -1,6 +1,7 @@
 #coding:utf-8
 
 from os import stat
+from PIL import Image, ImageTk
 from tkinter import Canvas, Tk, Label, Button, Entry, PhotoImage, StringVar
 
 class Window():
@@ -46,15 +47,18 @@ class Window():
         #Background centering
         x = Window.__Canvas.winfo_reqwidth()
         y = Window.__Canvas.winfo_reqheight()
-        Window.__Background = Window.create_image(x//2, y//2, 'images/earth.gif', anchor='center')
+        Window.__Background = Window.create_image(x//2, y//2, 'images/earth.png', anchor='center')
         
         
         #Packing
         Window.layout_pack()
                 
     @staticmethod   
-    def create_image(pos_x, pos_y, image_source, anchor='nw') -> int:
-        image = PhotoImage(file= image_source)
+    def create_image(pos_x, pos_y, image_source, anchor='nw', scale=1) -> int:
+        raw_img = Image.open(image_source)
+        size = ( round(raw_img.width*scale), round(raw_img.height*scale))
+        resized_image = raw_img.resize(size, Image.ANTIALIAS)
+        image = ImageTk.PhotoImage(resized_image)
         id = Window.__Canvas.create_image(pos_x, pos_y, image=image, anchor=anchor)
         return id, image
         
@@ -69,7 +73,7 @@ class Window():
     
     @staticmethod
     def mainloop():
-        print('loop')
+        print('------=[loop]=------')
         Window.__App.mainloop()
     
     

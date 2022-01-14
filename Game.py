@@ -23,12 +23,16 @@ class Game(Window):
     @classmethod
     def start_game(cls):
         cls.__playing = True
+        
+        cls.spawn_ennemies(2,6)
+        
+        
         cls.clock()
     
     @classmethod
     def clock(cls):
         
-        Alien.tick()
+        Alien.tick(cls.formation)
         Bullet.tick()
         
         if cls.__playing:
@@ -37,15 +41,15 @@ class Game(Window):
     @classmethod
     def spawn_ennemies(cls, rows=1, cols=5, type=('normal')):
         
-        dx = cls.get_Canvas().winfo_reqwidth() // 2 * (cols +2) #Spawns alien only on one side of the screen to allow lateral movement
-        dy = cls.get_Canvas().winfo_reqwidth() // 10
+        dx = cls.get_Canvas().winfo_reqwidth() // (2 * (cols +2)) #Spawns alien only on one side of the screen to allow lateral movement
+        dy = cls.get_Canvas().winfo_reqheight() // 10
+        
+        print('max:', cls.get_Canvas().winfo_reqwidth(), cls.get_Canvas().winfo_reqheight(), 'div:', dx, dy)
         
         cls.formation = []
-        
         for row in range(0, rows):
             row_list = []
             for col in range(0, cols):
-                row_list.append(NormalAlien(dy*(j+1), dx*(j+1)))
+                row_list.append(NormalAlien(dx*(col+1), dy*(row+1)))
             cls.formation.append(row_list)
         
-        print(cls.formation)
