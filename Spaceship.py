@@ -62,3 +62,6 @@ class Spaceship(Window):
             self.__lives=depiler(self.__lives)
         if pile_vide(self.__lives)==True  : 
             Game.stop_game()
+
+        self.disp_lives(len(self.__lives))
+        

@@ -2,7 +2,7 @@
 
 from os import stat
 from tkinter import Canvas, Tk, Label, Button, Entry, PhotoImage, StringVar
-
+ 
 class Window():
     """
     Library of display functions inherited from by almost all object class

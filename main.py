@@ -27,7 +27,7 @@ Window.setup()
 x = NormalAlien(Window.get_Canvas().winfo_reqwidth()//2, Window.get_Canvas().winfo_reqheight()//2)
 
 Player = Spaceship()
-Game.start()
+Game.start_game()
 
 
 
