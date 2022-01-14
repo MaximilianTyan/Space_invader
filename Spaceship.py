@@ -2,10 +2,12 @@
 
 from Window import Window
 from Bullet import Bullet
+from Game import Game
+from pile_fct import creer_pile, depiler, pile_vide
 class Spaceship(Window):
     
     def __init__(self) -> None:
-        self.__lives = 3
+        self.__lives = creer_pile(3)   #création d'une pile pour le nombre de vie 
         
         self.__speed = 10
         
@@ -42,4 +44,13 @@ class Spaceship(Window):
     def update_pos(self):
         self.get_Canvas().coords(self.__Image[0], self.__pos_x, self.__pos_y)
         
-    
+    def life(self) :
+        self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, self.__Image, anchor='center')
+        x1, y1 = self.get_Canvas().coords(self.__Sprite[0])
+        x2 = x1 + self.__Sprite[1].width()
+        y2 = y1 + self.__Sprite[1].height()
+        detection = self.get_Canvas().find_overlapping(x1, y1, x2, y2)
+        if len(detection)>4 : 
+            self.__lives=depiler(self.__lives)
+        if pile_vide(self.__lives)==True  : 
+            Game.stop_game()
