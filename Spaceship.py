@@ -54,11 +54,20 @@ class Spaceship(Window):
         
     def life(self) :
         self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, self.__Image, anchor='center')
-        x1, y1 = self.get_Canvas().coords(self.__Sprite[0])
-        x2 = x1 + self.__Sprite[1].width()
-        y2 = y1 + self.__Sprite[1].height()
+        x, y = self.get_Canvas().coords(self.__Sprite[0])
+        
+        x1 = x - self.__Sprite[1].width() //2 - self._hit_radius
+        y1 = y - self.__Sprite[1].height() //2 - self._hit_radius
+        
+        x2 = x + self.__Sprite[1].width() //2 + self._hit_radius
+        y2 = y + self.__Sprite[1].height() //2 + self._hit_radius
+        
         detection = self.get_Canvas().find_overlapping(x1, y1, x2, y2)
+        
         if len(detection)>4 : 
             self.__lives=depiler(self.__lives)
         if pile_vide(self.__lives)==True  : 
             Game.stop_game()
+        
+        self.disp_lives(len(self.__lives))
+        
