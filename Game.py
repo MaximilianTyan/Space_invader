@@ -7,18 +7,30 @@ from Bullet import Bullet
 from Alien import Alien
 
 class Game(Window):
-    def __init__(self) -> None:
-        self.__clock_time = 50
     
-    def game_reset(self):
-        self.__level = 0
-        self.__score = 0
+    __playing = False
+    __clock_time = 50
     
+    @classmethod
+    def game_reset(cls):
+        cls.__level = 0
+        cls.__score = 0
     
-    def clock(self):
+    @classmethod
+    def stop_game(cls):
+        cls.__playing = False
+        
+    @classmethod
+    def start_game(cls):
+        cls.__playing = True
+        cls.clock()
+    
+    @classmethod
+    def clock(cls):
         
         Alien.tick()
         Bullet.tick()
         
-        self.get_App().after(self.__clock_time, self.clock)
+        if cls.__playing:
+            cls.get_App().after(cls.__clock_time, cls.clock)
         

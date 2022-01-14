@@ -13,6 +13,9 @@ class Spaceship(Window):
         self.__pos_y = self.get_Canvas().winfo_reqheight() * (1 - 0.1)
         
         self.__Image = self.create_image(self.__pos_x, self.__pos_y, 'images/vaisseau.gif', anchor='center')
+        self.__BoundingRect = self.get_Canvas().create_rectangle(0, 0, 
+                                                                self.__Image[1].width(), 
+                                                                self.__Image[1].height())
         
         key_dict = (
             (lambda evt: self.left(), ('q', 'Left')),
@@ -41,5 +44,10 @@ class Spaceship(Window):
     
     def update_pos(self):
         self.get_Canvas().coords(self.__Image[0], self.__pos_x, self.__pos_y)
+        self.get_Canvas().coords(self.__BoundingRect, 
+                                    self.__pos_x - self.__Image[1].width()//2,
+                                    self.__pos_y - self.__Image[1].height()//2,
+                                    self.__pos_x + self.__Image[1].width()//2, 
+                                    self.__pos_y + self.__Image[1].height()//2)
         
     
