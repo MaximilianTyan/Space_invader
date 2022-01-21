@@ -14,7 +14,7 @@ class Spaceship(Window):
         self.__pos_x = self.get_Canvas().winfo_reqwidth() // 2
         self.__pos_y = self.get_Canvas().winfo_reqheight() * (1 - 0.1)
         
-        self.__Image = self.create_image(self.__pos_x, self.__pos_y, 'images/vaisseau.gif', anchor='center')
+        self.__Image = self.create_image(self.__pos_x, self.__pos_y, 'images/vaisseau.png', anchor='center', scale = 0.1)
         self.__BoundingRect = self.get_Canvas().create_rectangle(0, 0, 
                                                                 self.__Image[1].width(), 
                                                                 self.__Image[1].height())

@@ -36,7 +36,7 @@ class Bullet(Window):
         else:
             self.__speed = 5
         
-        self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, 'images/missile.gif', anchor='center')
+        self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, 'images/missile.png', anchor='center')
         
         Bullet.__list.append(self)
 

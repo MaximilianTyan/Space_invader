@@ -24,14 +24,8 @@ from Alien import FastAlien, NormalAlien, ToughAlien, HardAlien, Boss
 #Window creation
 Window.setup()
 
-x = NormalAlien(Window.get_Canvas().winfo_reqwidth()//2, Window.get_Canvas().winfo_reqheight()//2)
-
 Player = Spaceship()
 Game.start_game()
-
-
-
-
 
 
 Window.mainloop()
