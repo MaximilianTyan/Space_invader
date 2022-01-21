@@ -2,72 +2,133 @@
 
 from Window import Window
 from Bullet import Bullet
-from Game import Game
-from pile_fct import creer_pile, depiler, pile_vide
+from pile_fct import creer_pile, depiler, pile_vide, taille_pile
+
 class Spaceship(Window):
     
-    def __init__(self) -> None:
-        self.__lives = creer_pile(3)   #création d'une pile pour le nombre de vie 
+    debug = True
+    
+    @classmethod
+    def setup(cls) -> None:
+        cls.__lives = creer_pile(3)   #création d'une pile pour le nombre de vie 
         
-        self.__speed = 10
+        cls.__speed = 10
         
-        self.__pos_x = self.get_Canvas().winfo_reqwidth() // 2
-        self.__pos_y = self.get_Canvas().winfo_reqheight() * (1 - 0.1)
+        cls.__pos_x = cls.get_Canvas().winfo_reqwidth() // 2
+        cls.__pos_y = cls.get_Canvas().winfo_reqheight() * (1 - 0.1)
         
-        self.__Image = self.create_image(self.__pos_x, self.__pos_y, 'images/vaisseau.png', anchor='center', scale = 0.1)
-        self.__BoundingRect = self.get_Canvas().create_rectangle(0, 0, 
-                                                                self.__Image[1].width(), 
-                                                                self.__Image[1].height())
+        cls.__Image = cls.create_image(cls.__pos_x, cls.__pos_y, 'images/anti-virus.png', anchor='center', scale = 0.3)
+        if Spaceship.debug:
+            cls.__BoundingRect = cls.get_Canvas().create_rectangle(0, 0, 
+                                                                    cls.__Image[1].width(), 
+                                                                    cls.__Image[1].height())
         
         key_dict = (
-            (lambda evt: self.left(), ('q', 'Left')),
-            (lambda evt: self.right(), ('d', 'Right')),
-            (lambda evt: self.shoot(), ('space',)),
+            (lambda evt: cls.left(), ('q', 'Left')),
+            (lambda evt: cls.right(), ('d', 'Right')),
+            (lambda evt: cls.shoot(), ('space',)),
         )
-        for val in key_dict:
-            for key in val[1]:
+        for func,keys in key_dict:
+            for key in keys:
                 #print(f'', val[0])
-                self.get_App().bind(f'<{key}>', val[0])
-        
-    def left(self) -> None:
-        if self.__pos_x > self.__Image[1].width() //2 :
-            self.__pos_x -= self.__speed
-            self.update_pos()
+                cls.get_App().bind(f'<{key}>', func)
     
-    def right(self) -> None:
-        if self.__pos_x < self.get_Canvas().winfo_reqwidth() - self.__Image[1].width() //2 :
-            self.__pos_x += self.__speed
-            self.update_pos()
+    @classmethod
+    def reset(cls):
+        cls.setup()
     
-    def shoot(self):
-        Bullet(self.__pos_x, self.__pos_y, 'ally', 'normal')
-        print('pew')
+    @classmethod  
+    def left(cls) -> None:
+        if cls.__pos_x > cls.__Image[1].width() //2 :
+            cls.__pos_x -= cls.__speed
+            cls.update_pos()
     
+    @classmethod
+    def right(cls) -> None:
+        if cls.__pos_x < cls.get_Canvas().winfo_reqwidth() - cls.__Image[1].width() //2 :
+            cls.__pos_x += cls.__speed
+            cls.update_pos()
     
-    def update_pos(self):
-        self.get_Canvas().coords(self.__Image[0], self.__pos_x, self.__pos_y)
-        self.get_Canvas().coords(self.__BoundingRect, 
-                                    self.__pos_x - self.__Image[1].width()//2,
-                                    self.__pos_y - self.__Image[1].height()//2,
-                                    self.__pos_x + self.__Image[1].width()//2, 
-                                    self.__pos_y + self.__Image[1].height()//2)
+    @classmethod
+    def shoot(cls):
+        Bullet(cls.__pos_x, cls.__pos_y, 'ally', 'fast')
+        cls.get_Canvas().tag_raise(cls.__Image[0])
+    
+    @classmethod
+    def update_pos(cls):
+        cls.get_Canvas().coords(cls.__Image[0], cls.__pos_x, cls.__pos_y)
         
-    def life(self) :
-        self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, self.__Image, anchor='center')
-        x, y = self.get_Canvas().coords(self.__Sprite[0])
+        if Spaceship.debug:
+            cls.get_Canvas().coords(cls.__BoundingRect, 
+                                        cls.__pos_x - cls.__Image[1].width()//2,
+                                        cls.__pos_y - cls.__Image[1].height()//2,
+                                        cls.__pos_x + cls.__Image[1].width()//2, 
+                                        cls.__pos_y + cls.__Image[1].height()//2)
+    
+    @classmethod       
+    def alive_check(cls):
+        return not pile_vide(cls.__lives)
+
+    @classmethod
+    def tick(cls):
+        if cls.detect_hit(): 
+            cls.__lives=depiler(cls.__lives)
+        cls.disp_lives(taille_pile(cls.__lives))
+    
+    @classmethod
+    def detect_hit(cls):
         
-        x1 = x - self.__Sprite[1].width() //2 - self._hit_radius
-        y1 = y - self.__Sprite[1].height() //2 - self._hit_radius
+        x = cls.__pos_x
+        y = cls.__pos_y
         
-        x2 = x + self.__Sprite[1].width() //2 + self._hit_radius
-        y2 = y + self.__Sprite[1].height() //2 + self._hit_radius
+        x1 = x - cls.__Image[1].width() //2
+        y1 = y - cls.__Image[1].height() //2
         
-        detection = self.get_Canvas().find_overlapping(x1, y1, x2, y2)
+        width = cls.__Image[1].width()
+        height = cls.__Image[1].height()
         
-        if len(detection)>4 : 
-            self.__lives=depiler(self.__lives)
-        if pile_vide(self.__lives)==True  : 
-            Game.stop_game()
+        if Spaceship.debug:
+            cls.get_Canvas().coords(cls.__BoundingRect, x1, y1, x1+width, y1+height)
+            
+        detected = False
         
-        self.disp_lives(len(self.__lives))
+        for bullet in Bullet.get_list():
+            if bullet.team == 'ennemy':   #player's bullet
+                
+                x1_b, y1_b, width_b, height_b = bullet.get_hitbox()
+                
+                # UP LEFT HAND CORNER
+                if (x1 < x1_b < x1 + width) and (y1 < y1_b < y1 + height):
+                    detected =  True
+
+                    break
+                
+                # UP RIGHT HAND CORNER
+                elif (x1 < x1_b + width_b < x1 + width) and (y1 < y1_b < y1 + height):
+                    detected = True
+
+                    break
+                
+                # BOTTOM LEFT HAND CORNER
+                elif (x1 < x1_b < x1 + width) and (y1 < y1_b + height_b < y1 + height):
+                    detected = True
+
+                    break
+                
+                # BOTTOM RIGHT HAND CORNER
+                elif (x1 < x1_b + width_b < x1 + width) and (y1 < y1_b + height_b < y1 + height):
+                    detected = True
+                    
+                    break
+                
+                else:
+                    detected = False
+                
+                
+        if detected:
+            Bullet.get_list().remove(bullet)
+            
+            cls.get_Canvas().create_oval(x1_b-10, y1_b-10, x1_b+10, y1_b+10, fill='red')
+        
+        return detected
         

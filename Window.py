@@ -1,6 +1,5 @@
 #coding:utf-8
 
-from os import stat
 from PIL import Image, ImageTk
 from tkinter import Canvas, Tk, Label, Button, Entry, PhotoImage, StringVar
  
@@ -14,7 +13,14 @@ class Window():
     #Init overrule
     def __init__(self) -> None:
             raise(Exception('Window class is not to be instanced, it is only for methods inheritance purposes'))
+    
+    @classmethod
+    def link_functions(cls, start_game, reset_game, stop_game):
+        cls.start_game = start_game
+        cls.reset_game = reset_game
+        cls.stop_game = stop_game
        
+    
     @staticmethod
     def setup(width=800, height=600, offset_x=250, offset_y=30):
         """
@@ -40,19 +46,23 @@ class Window():
 
         
         #Title Screen
-        Window.__New_Game_button = Button(Window.__App, text="NEW GAME")
+        Window.__New_Game_button = Button(Window.__App, text="NEW GAME", command=Window.reset_game)
         Window.__Exit_button = Button(Window.__App, text="QUITTER", fg="red", command=Window.__App.destroy)
 
-
-        #Background centering
-        x = Window.__Canvas.winfo_reqwidth()
-        y = Window.__Canvas.winfo_reqheight()
-        Window.__Background = Window.create_image(x//2, y//2, 'images/earth.png', anchor='center')
-        
-        
         #Packing
         Window.layout_pack()
                 
+    @staticmethod
+    def bkg_image(image_source):
+        #Background centering
+        x = Window.__Canvas.winfo_reqwidth()
+        y = Window.__Canvas.winfo_reqheight()
+        
+        Window.__Background = Window.create_image(x//2, y//2, image_source, anchor='center')
+        
+        Window.__Canvas.tag_lower(Window.__Background[0])
+    
+    
     @staticmethod   
     def create_image(pos_x, pos_y, image_source, anchor='nw', scale=1) -> int:
         raw_img = Image.open(image_source)
@@ -101,7 +111,7 @@ class Window():
         Args:
             lives (int): new number of lives to be displayed
         """
-        Window.__Lives_label.text = "Vies : " + str(lives)
+        Window.__Lives_label.config(text = "Vies : " + str(lives) + ' ♥')
     
     @staticmethod
     def disp_score(score) -> None:
@@ -109,6 +119,6 @@ class Window():
         Args:
             score (int): new score to be displayed
         """
-        Window.__Score_label.text = "Vies : " + str(score)
+        Window.__Score_label.config(text ="Score : " + str(score))
     
     
