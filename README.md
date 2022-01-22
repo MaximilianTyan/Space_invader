@@ -15,6 +15,6 @@ Votre vaisseau antivirus doit empêcher différentes personnalités de répendre
 
 Utilisez les flèches de gauche et de droite pour déplacer votre vaisseau. 
 La barre espace vous permet de tirer. 
-Les ennemis se déplacent de gauche à droite jusqu'au bord de l'écran, décende d'un cran, se déplace de droite à gauche vers l'autre côté de l'écran, décende de nouveau, et répètent ces actions. 
-Les ennemis vous tire dessus de manière aléatoire, se prendre un tire vous retire une vie.
+Les ennemis se déplacent de gauche à droite jusqu'au bord de l'écran, décende d'un cran, se déplace de droite à gauche vers l'autre côté de l'écran, décendent de nouveau, et répètent ces actions. 
+Les ennemis vous tirent dessus de manière aléatoire, se prendre un tir vous retire une vie.
 Si vous n'avez plus de vie ou que les ennemis arrivent en bas de l'écran, vous avez perdu. 

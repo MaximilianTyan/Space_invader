@@ -6,11 +6,15 @@ from pile_fct import creer_pile, depiler, pile_vide, taille_pile
 
 class Spaceship(Window):
     
-    debug = True
+    debug = False
     
     @classmethod
-    def setup(cls) -> None:
-        cls.__lives = creer_pile(3)   #création d'une pile pour le nombre de vie 
+    def setup(cls, lives='auto') -> None:
+        
+        if lives == 'auto':
+            cls.__lives = creer_pile(3)   #création d'une pile pour le nombre de vie 
+        else:
+            cls.__lives = lives
         
         cls.__speed = 10
         
@@ -32,31 +36,45 @@ class Spaceship(Window):
             for key in keys:
                 #print(f'', val[0])
                 cls.get_App().bind(f'<{key}>', func)
-    
+        
+        cls.__max_health = taille_pile(cls.__lives)
+        cls.__cracked = False
+        cls.__crack_image = None
+
+        cls.__can_shoot = True
+        cls.__shoot_cooldown = 0
+        
+        
     @classmethod
-    def reset(cls):
-        cls.setup()
+    def reset(cls, keeplives=False):
+        if keeplives:
+            lives = cls.__lives
+        else:
+            lives = 'auto'
+        cls.setup(lives)
+        
+        if keeplives:
+            cls.__lives = lives
+            cls.update_cracks()
     
     @classmethod  
     def left(cls) -> None:
         if cls.__pos_x > cls.__Image[1].width() //2 :
             cls.__pos_x -= cls.__speed
-            cls.update_pos()
+
     
     @classmethod
     def right(cls) -> None:
         if cls.__pos_x < cls.get_Canvas().winfo_reqwidth() - cls.__Image[1].width() //2 :
             cls.__pos_x += cls.__speed
-            cls.update_pos()
-    
-    @classmethod
-    def shoot(cls):
-        Bullet(cls.__pos_x, cls.__pos_y, 'ally', 'fast')
-        cls.get_Canvas().tag_raise(cls.__Image[0])
+
     
     @classmethod
     def update_pos(cls):
         cls.get_Canvas().coords(cls.__Image[0], cls.__pos_x, cls.__pos_y)
+        
+        if cls.__cracked:
+            cls.get_Canvas().coords(cls.__CrackSprite[0], cls.__pos_x, cls.__pos_y)
         
         if Spaceship.debug:
             cls.get_Canvas().coords(cls.__BoundingRect, 
@@ -68,12 +86,54 @@ class Spaceship(Window):
     @classmethod       
     def alive_check(cls):
         return not pile_vide(cls.__lives)
+    
+    @classmethod  
+    def update_cracks(cls):
+        perc = taille_pile(cls.__lives) / cls.__max_health 
+        image = None
+        
+        if perc <= 0.25:
+            image = 'images/impact_3.png'
+        elif perc <= 0.50:
+            image = 'images/impact_2.png'
+        elif perc <= 0.75:
+            image = 'images/impact_1.png'
+            
+        if image != cls.__crack_image:
+            cls.__CrackSprite = cls.create_image(cls.__pos_x, cls.__pos_y, 
+                                            image, anchor='center', scale=0.5)
+            cls.__crack_image = image
+            cls.__cracked = True
+   
+    @classmethod
+    def shoot(cls):
+        if cls.__can_shoot:
+            Bullet(cls.__pos_x, cls.__pos_y, 'ally', 'fast')
+            cls.get_Canvas().tag_raise(cls.__Image[0])
+            
+            if cls.__cracked:
+                cls.get_Canvas().tag_raise(cls.__CrackSprite[0])
+                
+            cls.__shoot_cooldown = 10    # clock: 20Hz, i.e. 0.5s
+            cls.__can_shoot = False
 
     @classmethod
     def tick(cls):
+        cls.update_pos()
+        cls.countdown()
+        
         if cls.detect_hit(): 
             cls.__lives=depiler(cls.__lives)
+            cls.update_cracks()
+            
         cls.disp_lives(taille_pile(cls.__lives))
+    
+    @classmethod
+    def countdown(cls):
+        if cls.__shoot_cooldown > 0:
+            cls.__shoot_cooldown -= 1
+        else:
+            cls.__can_shoot = True
     
     @classmethod
     def detect_hit(cls):
@@ -127,8 +187,6 @@ class Spaceship(Window):
                 
         if detected:
             Bullet.get_list().remove(bullet)
-            
-            cls.get_Canvas().create_oval(x1_b-10, y1_b-10, x1_b+10, y1_b+10, fill='red')
-        
+                    
         return detected
         

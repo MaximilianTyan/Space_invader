@@ -11,7 +11,8 @@ from Obstacle import Obstacle
 class Game(Window):
     
     __playing = False
-    __clock_time = 50
+    __clock_time = 50 # soit 20 ticks par secondes
+    __after_id = 0
     
     @classmethod
     def create_window(cls):
@@ -21,6 +22,8 @@ class Game(Window):
     
     @classmethod
     def reset_game(cls):
+        cls.get_App().after_cancel(cls.__after_id)
+        
         cls.get_Canvas().delete('all')
         cls.__score = 0
         cls.__level = 0
@@ -29,36 +32,40 @@ class Game(Window):
         Bullet.reset()
         Spaceship.reset()
         
-        cls.__formation = []
-        cls.__front_row = []
-        print('Game Reseted')
+        cls.__alien_formation = []
         
+        print('[Game Reseted]')
         cls.start_game()
     
     @classmethod
     def stop_game(cls):
+        print('[Game Stopped]')
         cls.__playing = False
-        print('Game Stopped')
+        cls.get_App().after_cancel(cls.__after_id)
+        
         
     @classmethod
     def start_game(cls):
+        print('[Game started]')
         cls.__score = 0
         cls.__playing = True
         
-        cls.__level = 0
+        cls.__level = 0  #Modifier ici le niveau auquel le jeu commence int [0:4]
         cls.level_init(cls.__level)
+        cls.spawn_obstacles()
+        
         cls.__prev_alien_count = Alien.get_alien_count()
         
         cls.clock()
-        print('Game Started')
+        
         
     
     @classmethod
     def clock(cls):
-        
         #Entities ticks
         Bullet.tick()
-        Alien.tick(cls.__formation, cls.__front_row)
+        Alien.tick(cls.__alien_formation)
+        Obstacle.tick(cls.__obstacle_formation)
         Spaceship.tick()
         
         #Score calculations
@@ -74,48 +81,111 @@ class Game(Window):
         if not alive:
             cls.lose()
         elif win:
-            cls.win()
-        
+            cls.__level += 1
+            
+            if cls.__level >= 5:
+                cls.win()
+            else:
+                cls.level_init(cls.__level)
         
         if cls.__playing:
-            cls.get_App().after(cls.__clock_time, cls.clock)
+            cls.__after_id = cls.get_App().after(cls.__clock_time, cls.clock)
     
     @classmethod
     def level_init(cls, level):
-        cls.bkg_image('images/earth.png')
-        cls.spawn_ennemies(2,6)
-   
-    
-    @classmethod
-    def spawn_ennemies(cls, rows=1, cols=5, type=('normal')):
+        cls.get_Canvas().delete('all')
         
-        dx = cls.get_Canvas().winfo_reqwidth() // (2 * (cols +2)) #Spawns alien only on one side of the screen to allow lateral movement
-        dy = cls.get_Canvas().winfo_reqheight() // 10
+        cls.__End_Sign = cls.get_Canvas().create_text(10, 10, anchor='nw', text="Level "+str(cls.__level+1), fill="white", font=('Helvetica 20 italic'))
+
+        Alien.reset()
+        Bullet.reset()
+        Spaceship.reset(keeplives=True)
+        Obstacle.reset(keepprevious=True)
+        
+        images = ['earth.png', 'mars.jpg', 'jupiter.jpeg','eye.jpg','pillars.jpg']
+        cls.bkg_image('images/' + images[cls.__level])
+        
+        cls.spawn_mobs(level)
+        #x = cls.get_Canvas().winfo_reqwidth() // 2
+        #y = cls.get_Canvas().winfo_reqheight() // 2
+        #a = HardAlien(x,y)
+        #cls.__alien_formation = [[a]]
+        #cls.__front_row = []
+        
+        cls.__prev_alien_count = Alien.get_alien_count()
+        
+    @classmethod
+    def spawn_mobs(cls, level):
+        
+        width = cls.get_Canvas().winfo_reqwidth()
+        height = cls.get_Canvas().winfo_reqheight()
+        dy = width // 10
+        
+        x_offset = width // 5
+        y_offset = height // 20
+        
+        level_ennemies = [
+            ['NNN',],
+            ['TNTNT',],
+            ['NTTTN','FNNNF'],
+            ['THHHT',],
+            ['FBF','NTHTN']
+        ]
+        cls.__alien_formation = []
+        for row, rows in enumerate(level_ennemies[level]):
+            row_list = []
+            for col, mob in enumerate(rows):
+                dx = width // (len(rows) + 2)
+                
+                if mob == 'F':
+                    newAlien = FastAlien(x_offset + dx*col, y_offset + dy*(row+1))
+                elif mob == 'N':
+                    newAlien = NormalAlien(x_offset + dx*col, y_offset + dy*(row+1))
+                elif mob == 'T':
+                    newAlien = ToughAlien(x_offset + dx*col, y_offset + dy*(row+1))
+                elif mob == 'H':
+                    newAlien = HardAlien(x_offset + dx*col, y_offset + dy*(row+1))
+                
+                if mob == 'B':
+                    newAlien = Boss(width//2, height//4)
+                    
+                row_list.append(newAlien)
+                
+                    
+            cls.__alien_formation.append(row_list)
+        print(f'-- Lvl {cls.__level+1} ennemies spawned --')
+            
+   
+    @classmethod
+    def spawn_obstacles(cls, rows=2, cols=10, moving=False):
+
+        width = cls.get_Canvas().winfo_reqwidth()
+        height = cls.get_Canvas().winfo_reqheight()
+        
+        dx = width // (cols + 1) #Spawns alien only on one side of the screen to allow lateral movement
+        dy = width // 20
         
         #print('max:', cls.get_Canvas().winfo_reqwidth(), cls.get_Canvas().winfo_reqheight(), 'div:', dx, dy)
         
-        cls.__formation = []
-        cls.__front_row = []
+        cls.__obstacle_formation = []
+        
+        y_offset = height - (height//5)
         
         for row in range(0, rows):
             row_list = []
-            
             for col in range(0, cols):
-                newAlien = NormalAlien(dx*(col+1), dy*(row+1))
-                row_list.append(newAlien)
-                
-                if (row == rows - 1):
-                    cls.__front_row.append(newAlien)
-            cls.__formation.append(row_list)
-        print('Ennemies Spawned')
+                newObstacle = Obstacle(dx*(col+1), y_offset - dy*(row+1))
+                row_list.append(newObstacle)
+            cls.__obstacle_formation.append(row_list)
+        print('-- Obstacles spawned --')
         
     @classmethod
     def win(cls):
         x = cls.get_Canvas().winfo_reqwidth() // 2
         y = cls.get_Canvas().winfo_reqheight() // 2
-        cls.__End_Sign = cls.get_Canvas().create_text(x, y, anchor='center', text="YOU WIN", fill="red", font=('Helvetica 50 bold'))
+        cls.__End_Sign = cls.get_Canvas().create_text(x, y, anchor='center', text="YOU WIN", fill="green", font=('Helvetica 50 bold'))
         cls.stop_game()
-        print('You Win')
+        print('-= You Win =-')
         
     @classmethod
     def lose(cls):
@@ -123,4 +193,4 @@ class Game(Window):
         y = cls.get_Canvas().winfo_reqheight() // 2
         cls.__End_Sign = cls.get_Canvas().create_text(x, y, anchor='center', text="GAME OVER", fill="red", font=('Helvetica 50 bold'))
         cls.stop_game()
-        print('You Lose')
+        print('-= You Lost =-')

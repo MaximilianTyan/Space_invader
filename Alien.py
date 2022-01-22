@@ -15,7 +15,7 @@ class Alien(Window):
     __dir_x = 1
     __dir_y = 1
     
-    debug = True
+    debug = False
     
     hit_bottom = False
     
@@ -35,6 +35,9 @@ class Alien(Window):
         else:
             self.__speed = 5
         
+        self.__max_health = self._health
+        self.__cracked = False
+        self.__crack_image = None
         
         self.__Sprite = self.create_image(self.__pos_x, self.__pos_y, self._image_src, anchor='center', scale=self._scale)
         
@@ -67,6 +70,27 @@ class Alien(Window):
     def bottom_check(cls):
         return cls.hit_bottom
     
+    
+    def update_cracks(self):
+        perc = self._health / self.__max_health 
+        image = None
+        
+        if perc <= 0.25:
+            image = 'images/impact_3.png'
+        elif perc <= 0.50:
+            image = 'images/impact_2.png'
+        elif perc <= 0.75:
+            image = 'images/impact_1.png'
+        
+        if image != self.__crack_image:
+            self.__CrackSprite = self.create_image(self.__pos_x, self.__pos_y, 
+                                            image, anchor='center', 
+                                            scale=self._scale)
+            self.__crack_image = image
+            self.__cracked = True
+
+    
+    
     def shoot(self, speed='normal'): 
         Bullet(self.__pos_x, self.__pos_y, 'ennemy', speed)
 
@@ -90,22 +114,22 @@ class Alien(Window):
                 x1_b, y1_b, width_b, height_b = bullet.get_hitbox()
                 
                 # UP LEFT HAND CORNER
-                if (x1 < x1_b < x1 + width)             and     (y1 < y1_b < y1 + height):
+                if (x1 < x1_b < x1 + width)             and (y1 < y1_b < y1 + height):
                     detected =  True
                     break
                 
                 # UP RIGHT HAND CORNER
-                elif (x1 < x1_b + width_b < x1 + width) and     (y1 < y1_b < y1 + height):
+                elif (x1 < x1_b + width_b < x1 + width) and (y1 < y1_b < y1 + height):
                     detected = True
                     break
                 
                 # BOTTOM LEFT HAND CORNER
-                elif (x1 < x1_b < x1 + width)           and     (y1 < y1_b + height_b < y1 + height):
+                elif (x1 < x1_b < x1 + width)           and (y1 < y1_b + height_b < y1 + height):
                     detected = True
                     break
                 
                 # BOTTOM RIGHT HAND CORNER
-                elif (x1 < x1_b + width_b < x1 + width) and     (y1 < y1_b + height_b < y1 + height):
+                elif (x1 < x1_b + width_b < x1 + width) and (y1 < y1_b + height_b < y1 + height):
                     detected = True
                     break
                 
@@ -116,10 +140,10 @@ class Alien(Window):
             Bullet.get_list().remove(bullet)
         
         return detected
-
     
-    def take_damage(self, formation, front_row, damage=1):
+    def take_damage(self, formation, damage=1):
         self._health -= damage
+        self.update_cracks()
         
         if self._health <= 0:
             Alien.__list.remove(self)
@@ -127,31 +151,33 @@ class Alien(Window):
             for row in formation:
                 if self in row:
                     row.remove(self)
-                    
-            if self in front_row:
-                front_row.remove(self)
                 
             Alien.__alien_count -= 1
+        
             
     
     
     def move(self, left_border_contact, right_border_contact):
+        
         self.__pos_x = self.__pos_x + self.__speed * Alien.__dir_x
-        if left_border_contact:
+        
+        if left_border_contact and not isinstance(self, Boss):
             self.__pos_y = self.__pos_y + self.get_Canvas().winfo_reqwidth() // 20
-        elif right_border_contact:
+        elif right_border_contact and not isinstance(self, Boss):
             self.__pos_y = self.__pos_y + self.get_Canvas().winfo_reqwidth() // 20
         
         # Deletes the entity if its sprite exceeds graphical limits
-        if self.__pos_y < 0 + self.__Sprite[1].height()//2:
+        if self.__pos_y >= self.get_Canvas().winfo_reqheight() - 3*self.__Sprite[1].width()//2:
             Alien.__list.remove(self)
             Alien.hit_bottom = True
         else:
             self.get_Canvas().coords(self.__Sprite[0], self.__pos_x, self.__pos_y)
+            if self.__cracked:
+                self.get_Canvas().coords(self.__CrackSprite[0], self.__pos_x, self.__pos_y)
         
         
     @classmethod
-    def tick(cls, formation, front_row):
+    def tick(cls, formation):
         
         # Global border hit detection (change x directio of the formation)
         left_border_contact = False
@@ -167,14 +193,14 @@ class Alien(Window):
         
         while not file_vide(Queue_left):
             alien = suivant(Queue_left)
-            if alien.__pos_x < 0 + alien.__Sprite[1].width()//2 :
+            if alien.__pos_x < 0 + alien.__Sprite[1].width()//2:
                 cls.__dir_x = 1
                 left_border_contact = True
                 break
         
         while not file_vide(Queue_right):
             alien = suivant(Queue_right)
-            if alien.__pos_x > cls.get_Canvas().winfo_reqwidth() - alien.__Sprite[1].width()//2 :
+            if alien.__pos_x > cls.get_Canvas().winfo_reqwidth() - alien.__Sprite[1].width()//2:
                 cls.__dir_x = -1
                 right_border_contact = True
                 break
@@ -185,35 +211,35 @@ class Alien(Window):
                 instance.move(left_border_contact, right_border_contact)
         
         # Shoot attempt for the front_row
-        if len(front_row) != 0 and randint(0,100) < 5:
-            shooter_ind = randint(0, len(front_row) - 1)
-            front_row[shooter_ind].shoot()
+        if len(cls.__list) != 0 and randint(0,100) < 5:
+            shooter_ind = randint(0, len(cls.__list) - 1)
+            cls.__list[shooter_ind].shoot()
         
         # Damage detection
         
         for row in formation:
             for alien in row:
                 if alien.detect_hit():
-                    alien.take_damage(formation, front_row)
+                    alien.take_damage(formation)
 
 class FastAlien(Alien):
-    def __init__(self, pos_x, pos_y, front_row=False) -> None:
+    def __init__(self, pos_x, pos_y) -> None:
         
         self._health = 1
         self.speed = 'fast'
         self._hit_radius = 20
-        self._image_src = 'images/soucoupe.png'
-        self._scale = 0.25
-        super().__init__(pos_x, pos_y, front_row=front_row)
+        self._image_src = 'images/chloro.png'
+        self._scale = 0.05
+        super().__init__(pos_x, pos_y)
 
 class NormalAlien(Alien):
     def __init__(self, pos_x, pos_y) -> None:
         
         self._health = 1
         self.speed = 'normal'
-        self._hit_radius = 10
+        self._hit_radius = 5
         self._image_src = 'images/karen.png'
-        self._scale = 0.3
+        self._scale = 0.4
         
         super().__init__(pos_x, pos_y)
 
@@ -222,8 +248,8 @@ class ToughAlien(Alien):
         self._health = 2
         self.speed = 'normal'
         self._hit_radius = 10
-        self._image_src = 'images/trump.png'
-        self._scale = 0.5
+        self._image_src = 'images/boris.png'
+        self._scale = 0.40
         
         super().__init__(pos_x, pos_y)
 
@@ -232,17 +258,17 @@ class HardAlien(Alien):
         self._health = 5
         self.speed = 'slow'
         self._hit_radius = 10
-        self._image_src = 'images/raoult.png'
-        self._scale = 1
+        self._image_src = 'images/trump.png'
+        self._scale = 0.5
         super().__init__(pos_x, pos_y)
 
         
 class Boss(Alien):
     def __init__(self, pos_x, pos_y) -> None:
-        self._health = 100
-        self.speed = 'none'
+        self._health = 50
+        self.speed = 'slow'
         self._hit_radius = 10
-        self._image_src = 'images/alien4.png'
-        self._scale = 2
+        self._image_src = 'images/raoult.png'
+        self._scale = 0.5
         super().__init__(pos_x, pos_y)
 

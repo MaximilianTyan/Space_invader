@@ -3,7 +3,7 @@ from Window import Window
 class Bullet(Window):
     
     __list = []
-    debug = True
+    debug = False
     
     def __init__(self, pos_x, pos_y, team='ennemy', speed='normal') -> None:
         """[summary]
@@ -24,7 +24,7 @@ class Bullet(Window):
             scale = 1
         else:
             image_src = 'images/virus.png'
-            scale = 0.02
+            scale = 0.05
             
             self.__dir_y  = 1
         

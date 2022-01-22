@@ -58,7 +58,7 @@ class Window():
         x = Window.__Canvas.winfo_reqwidth()
         y = Window.__Canvas.winfo_reqheight()
         
-        Window.__Background = Window.create_image(x//2, y//2, image_source, anchor='center')
+        Window.__Background = Window.create_image(x//2, y//2, image_source, anchor='center', scale=0.8)
         
         Window.__Canvas.tag_lower(Window.__Background[0])
     
